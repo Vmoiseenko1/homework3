@@ -7,7 +7,7 @@ public class PhoneBook {
 
     public static void main(String[] args) {
         Record rec1 = new Record(123456789, "89137649297", "Victoria");
-        Record rec2 = new Record(123455678, "89137649287", "Alex");
+        Record rec2 = new Record(123455678, "89137649287", null);
         Record rec3 = new Record(123456670, "89139999999", "Blair");
         PhoneBook phoneBook1 = new PhoneBook(new ArrayList<>());
         try {
@@ -36,7 +36,7 @@ public class PhoneBook {
     public String getAllRecords(){
         String result = "";
         for(Record i: list){
-           result += "Идентификатор: " + Long.toString(i.getId())+ ", Имя: " + i.getId() + ", Номер телефона: " +
+           result += "Идентификатор: " + i.getId()+ ", Имя: " + i.getName() + ", Номер телефона: " +
                    i.getPhoneNumber() + "\n";
         }
         return result;
@@ -44,25 +44,28 @@ public class PhoneBook {
 
     public void createRecord (Record record) throws PhoneNumberAlreadyExists{
         for(Record i: list){
-            if(i.getPhoneNumber() == record.getPhoneNumber()) throw new PhoneNumberAlreadyExists("Телефонный номер" +
-                    " уже существует");
+            if(i.getPhoneNumber().equals(record.getPhoneNumber())) {
+                throw new PhoneNumberAlreadyExists("Телефонный номер" +
+                        " уже существует");
+            }
         }
         list.add(record);
     }
 
     public void updateRecord(Record record) throws RecordNotFound, RecordNotValid{
         Scanner in = new Scanner(System.in);
-        System.out.print("Введите id: ");
+        System.out.print("Введите номер телефона: ");
         String num = in.nextLine();
         System.out.print("Введите имя: ");
         String namee = in.nextLine();
-        if(num == "" || namee == "") throw new RecordNotValid("Не заполнены имя и/или номер телефона");
+        if(num.equals("")  || namee.equals("")) throw new RecordNotValid("Не заполнены имя и/или номер телефона");
         int index = 0;
         for(Record i: list){
-            index++;
             if(i.getId() == record.getId()){
                 i.setPhoneNumber(num);
                 i.setName(namee);
+            }else{
+                index++;
             }
         }
         if (index == list.size()) throw new RecordNotFound("Не существующий номер");
@@ -71,9 +74,11 @@ public class PhoneBook {
     public void deleteRecord(long id){
         int index = 0;
         for(Record i: list){
-            index ++;
-            if(Long.toString(i.getId()).equals(Long.toString(id))){
+            if(i.getId() == id){
                 list.remove(i);
+                break;
+            }else{
+                index ++;
             }
         }
         if(index== list.size()) throw new RecordNotFound("Не существующий номер");
